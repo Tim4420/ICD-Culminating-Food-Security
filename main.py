@@ -1,6 +1,10 @@
 #importing functions from other py files
 from randomtitle import randomtitle
 
+#importing hidden api keys
+from dotenv import load_dotenv
+load_dotenv()
+
 
 #importing dependencies for AI
 import google.generativeai as genai
@@ -8,7 +12,7 @@ from google.api_core.exceptions import ResourceExhausted
 import os
 
 #setting up Gemini AI
-my_secret = os.environ['shhhhhhhhhhhhhhhh']
+my_secret = os.getenv('shhhhhhhhhhhhhhhh')
 genai.configure(api_key=my_secret)
 basic, advanced = genai.GenerativeModel(
     "gemini-1.5-flash"), genai.GenerativeModel("gemini-2.0-flash-exp")
