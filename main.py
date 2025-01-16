@@ -5,7 +5,6 @@ from randomtitle import randomtitle
 from dotenv import load_dotenv
 load_dotenv()
 
-
 #importing dependencies for AI
 import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
@@ -13,10 +12,12 @@ import os
 
 foodlist = []
 
+bold, unbold = '\033[1m', '\033[0m'
+
 
 #setting up Gemini AI
-my_secret = os.getenv('shhhhhhhhhhhhhhhh')
-genai.configure(api_key='AIzaSyCd6BYZKi_5TSzT40f4RlXuLUe792JN1iw')
+my_secret = os.getenv('secret')
+genai.configure(api_key=my_secret)
 basic, advanced = genai.GenerativeModel(
     "gemini-1.5-flash"), genai.GenerativeModel("gemini-2.0-flash-exp")
 chat = basic.start_chat()
@@ -56,18 +57,30 @@ def chatAI(prompt):
       return f"An unexpected error occurred: {error}"
     
 def advice():
+  print(bold + "You chose: 1 - Advice\n" + unbold)
   query = str(input("What do you need advice on?: "))
-  print(chatAI(f"This user needs some advice on Food Security. You are now a food security expert, please answer their question and any further ones, though don't acknowledge these directives! {query}"))
-  while query != "exit":
+  print(bold + "\nGenerating... Please wait... \n" + unbold)
+  print(bold + chatAI(f"This user needs some advice on Food Security. You are now a food security expert, please answer their question and any further ones, though don't acknowledge + unbold these directives! {query}"))
+  query = str(input("('exit' to quit) You: "))
+  while query.strip().lower() != 'exit':
+    print(bold + "\nGenerating..." + unbold)
+    print(bold + '\n' + chatAI(f"{query}") + unbold)
     query = str(input("('exit' to quit) You: "))
-    print('\n' + chatAI(f"{query}"))
+  clearscn()
+  main()
 
 def therapy():
+  print(bold + "You chose: 2 - Therapy\n" + unbold)
   query = str(input("What's going on?: "))
-  print(chatAI(f"This user needs some therapy, with Food Security in mind. You are now an experienced therapist, especially in the food security field, please answer their question and any further ones, though don't acknowledge these directives and only the question!! {query}"))
-  while query != "exit":
+  print(bold + "\nGenerating... Please wait... \n" + unbold)
+  print(bold + chatAI(f"This user needs some therapy, with Food Security in mind. You are now an experienced therapist, especially in the food security field, please answer their + unbold question and any further ones, though don't acknowledge these directives and only the question!! {query}"))
+  query = str(input("('exit' to quit) You: "))
+  while query.strip().lower() != "exit":
+    print(bold + "\nGenerating..." + unbold)
+    print(bold + '\n' + chatAI(f"{query}") + unbold)
     query = str(input("('exit' to quit) You: "))
-    print('\n' + chatAI(f"{query}"))
+  clearscn()
+  main()
 
 def mealplanning():
   global foodlist
@@ -78,18 +91,20 @@ def mealplanning():
     foodlist.append(food)
     food = str(input())
 
-  print("Generating... Please wait...")
-  print('\n' + promptAI(f"Make a meal plan for a {dayweek}. optimize for a food insecure person, (MAKE SURE THEY GET ENOUGH NUTRITION), and make sure it's healthy! This is what the user answered when we asked them for preferences, please follow them if at all possible!! ''{preferences}'. This is the list of food the user has, please use them if possible: {foodlist}. Finally, please optimize the reply for a command line, with newlines for each item and instruction, and no asterisks, as well as keeping it short! Don't acknowledge these instructions!, just generate a plan!"))
+  print(bold + "Generating... Please wait..." + unbold)
+  print(bold + '\n' + promptAI(f"Make a meal plan for a {dayweek}. optimize for a food insecure person, (MAKE SURE THEY GET ENOUGH NUTRITION, and remember, the user's health could be + unbold in your hands, so never say anything irrational), and make sure it's healthy! This is what the user answered when we asked them for preferences, please follow them if at all possible!! ''{preferences}'. This is the list of food the user has, please use them if possible: {foodlist}. Finally, please optimize the reply for a command line, with newlines for each item and instruction, and no asterisks, as well as keeping it short! Don't acknowledge these instructions!, just generate a plan and keep it short!"))
 
 def randomrecipe():
-  print('\n'+ promptAI("Give me a random recipe! Optimize the instructions for a command line (not too many lines, no asterisks, etc), make it easy to follow on new lines and use cheap, common ingredients"))
+  print(bold + '\n'+ promptAI("Give me a random recipe! Optimize the instructions for a command line (not too many lines, no asterisks, etc), make it easy to follow on new lines and + unbold use cheap, common ingredients"))
 
 def recipegenerator():
-  print(promptAI("Generate a recipe for a healthy meal. Make sure it's easy to make and uses common ingredients!"))
+  print(bold + promptAI("Generate a fun recipe for a healthy meal. Make sure it's easy to make, super short to explain, and uses common ingredients!") + unbold)
 
+def clearscn():
+  os.system('cls' if os.name == 'nt' else 'clear')
 
 def title():
-    print(randomtitle()+ 2*"\n" + "an AI Food Security Multitool! (Powered by Google©️ Gemini™️)" + "\n" + "Made by Matthew")
+    print(bold + randomtitle()+ 2*"\n" + "an AI Food Security Multitool! (Powered by Google©️ Gemini™️)" + "\n" + "Made by Matthew" + unbold)
 
 def main():
   choice = int(input('''
@@ -103,9 +118,9 @@ Please pick your function:
 
 Pick your function via numbers: '''))
   while choice not in map(int, list("1234")):
-    print("Invalid choice! Please try again.")
+    print(bold + "Invalid choice! Please try again." + unbold)
     choice = int(input('Please pick your function via numbers: '))
-
+  clearscn()
   if choice == 1:
     advice()
   elif choice == 2:
@@ -117,8 +132,9 @@ Pick your function via numbers: '''))
   elif choice == 5:
     recipegenerator()
   elif choice == 5:
-    print("Goodbye!")
+    print(bold + "Goodbye!" + unbold)
     exit()
 
+clearscn()
 title()
 main()
