@@ -10,7 +10,7 @@ import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
 import os
 
-foodlist = []
+foodlist = False
 
 bold, unbold = '\033[1m', '\033[0m'
 
@@ -56,6 +56,39 @@ def chatAI(prompt):
       error_logged = True
       return f"An unexpected error occurred: {error}"
     
+
+
+def readfile(filename):
+  global foodlist
+  while (cond1:=os.path.exists(filename)) == False and (cond2 := os.path.exists(f'{filename}.txt')) == False:
+    print(bold + "File not found! Please try again." + unbold)
+    filename = str(input("Please enter the filename (either full or just the name without .txt): "))
+  if cond1:
+    openfile = open(filename, 'r')
+  elif cond2:
+    openfile = open(f'{filename}.txt', 'r')
+  lines = openfile.readlines()[3:]
+  for i in range(len(lines)):
+      lines[i] = lines[i].replace('\n', '')
+  return lines
+
+def ingredients():
+  global foodlist
+  print(bold + "You chose: 6 - Import ingredients from a file\n" + unbold)
+  if foodlist:
+    print(f'This is your ingredient list right now: {foodlist}\n\nDo you want to add to, or replace the current list?')
+    choice = str(input("Type 'add' or 'replace': "))
+    filename = str(input("Please enter the filename (either full or just the name without .txt): "))
+    if choice.lower() == 'add':
+      foodlist.append(readfile(filename))
+    else:
+      foodlist = readfile(filename)
+
+  filename = str(input("Please enter the filename (either full or just the name without .txt): "))
+  lines = readfile(filename)
+  print('here are the ingredients you enterred:\n\n'+', '.join(lines) + '\n\nYou can change them at any time by re-calling the function from the main menu!!')
+  main()
+
 def advice():
   print(bold + "You chose: 1 - Advice\n" + unbold)
   query = str(input("What do you need advice on?: "))
@@ -85,7 +118,8 @@ def therapy():
 def mealplanning():
   global foodlist
   dayweek = str(input("Do you want a meal plan for a day or a week?: "))
-  preferences = str(input("What are your dietary preferences?: "))
+  if not foodlist:
+    preferences = str(input("What are your dietary preferences?: "))
   food = str(input("Please list the food you have, one per line ('-1' to finish): \n"))
   while food != "-1":
     foodlist.append(food)
@@ -114,24 +148,33 @@ Please pick your function:
 3 - Meal Planning (for 1 day / for 1 Week)
 4 - Random Recipe
 5 - Recipe Generator
-6 - Exit
+6 - Import ingredients from a file
+7 - Exit
 
 Pick your function via numbers: '''))
-  while choice not in map(int, list("1234")):
+  while choice not in map(int, list("1234567")):
     print(bold + "Invalid choice! Please try again." + unbold)
     choice = int(input('Please pick your function via numbers: '))
   clearscn()
   if choice == 1:
     advice()
+
   elif choice == 2:
     therapy()
+
   elif choice == 3:
     mealplanning()
+
   elif choice == 4:
     randomrecipe()
+    
   elif choice == 5:
     recipegenerator()
-  elif choice == 5:
+
+  elif choice == 6:
+    ingredients()
+
+  elif choice == 7:
     print(bold + "Goodbye!" + unbold)
     exit()
 

@@ -1,0 +1,49 @@
+##MAKE SURE TO SAVE AFTERWARDS (CTRL-S or CMD-S)
+##DONT EDIT THESE LINES
+##----------------------ENTER LIST BELOW-------------------------
+Flour
+Sugar
+Salt
+Eggs
+Milk
+Butter
+Baking powder
+Vanilla extract
+Olive oil
+Garlic
+Onion
+Tomato
+Chicken
+Beef
+Pork
+Fish
+Rice
+Pasta
+Potatoes
+Carrots
+Peas
+Beans
+Lettuce
+Spinach
+Cheese
+Yogurt
+Bread
+Apples
+Bananas
+Oranges
+Grapes
+Strawberries
+Blueberries
+Lemon
+Lime
+Honey
+Cinnamon
+Nutmeg
+Pepper
+Chili powder
+Paprika
+Soy sauce
+Vinegar
+Mustard
+Ketchup
+Mayonnaise
