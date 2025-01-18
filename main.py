@@ -10,7 +10,7 @@ import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
 import os
 
-foodlist = False
+foodlist = []
 
 bold, unbold = '\033[1m', '\033[0m'
 
@@ -70,23 +70,29 @@ def readfile(filename):
   lines = openfile.readlines()[3:]
   for i in range(len(lines)):
       lines[i] = lines[i].replace('\n', '')
+  openfile.close()
   return lines
 
 def ingredients():
   global foodlist
   print(bold + "You chose: 6 - Import ingredients from a file\n" + unbold)
   if foodlist:
-    print(f'This is your ingredient list right now: {foodlist}\n\nDo you want to add to, or replace the current list?')
-    choice = str(input("Type 'add' or 'replace': "))
+    print(f'This is your ingredient list right now:\n {', '.join(foodlist)}\n\nDo you want to add to, or replace the current list?')
+    choice = str(input("Type 'add' or 'replace': ")).lower()
+    while choice not in ['add','replace']:
+      choice = str(input("Please type either 'add' or 'replace': "))
     filename = str(input("Please enter the filename (either full or just the name without .txt): "))
     if choice.lower() == 'add':
-      foodlist.append(readfile(filename))
+      foodlist.extend(readfile(filename))
     else:
       foodlist = readfile(filename)
+    print(f"This is your updated list:\n\n{', '.join(foodlist)}\n\n")
 
-  filename = str(input("Please enter the filename (either full or just the name without .txt): "))
-  lines = readfile(filename)
-  print('here are the ingredients you enterred:\n\n'+', '.join(lines) + '\n\nYou can change them at any time by re-calling the function from the main menu!!')
+  else:
+    filename = str(input("Please enter the filename (either full or just the name without .txt): "))
+    lines = readfile(filename)
+    foodlist = lines
+    print('here are the ingredients you enterred:\n\n'+', '.join(lines) + '\n\nYou can change them at any time by re-calling the function from the main menu!!')
   main()
 
 def advice():
@@ -118,21 +124,28 @@ def therapy():
 def mealplanning():
   global foodlist
   dayweek = str(input("Do you want a meal plan for a day or a week?: "))
-  if not foodlist:
-    preferences = str(input("What are your dietary preferences?: "))
-  food = str(input("Please list the food you have, one per line ('-1' to finish): \n"))
-  while food != "-1":
-    foodlist.append(food)
-    food = str(input())
+  preferences = str(input("What are your dietary preferences?: "))
+  if foodlist == []:
+    food = str(input("Please list the food you have, one per line ('-1' to finish): \n"))
+    while food != "-1":
+      foodlist.append(food)
+      food = str(input())
 
   print(bold + "Generating... Please wait..." + unbold)
   print(bold + '\n' + promptAI(f"Make a meal plan for a {dayweek}. optimize for a food insecure person, (MAKE SURE THEY GET ENOUGH NUTRITION, and remember, the user's health could be + unbold in your hands, so never say anything irrational), and make sure it's healthy! This is what the user answered when we asked them for preferences, please follow them if at all possible!! ''{preferences}'. This is the list of food the user has, please use them if possible: {foodlist}. Finally, please optimize the reply for a command line, with newlines for each item and instruction, and no asterisks, as well as keeping it short! Don't acknowledge these instructions!, just generate a plan and keep it short!"))
 
+  exit = input("press any key to exit")
+  clearscn()
+  main()
+
 def randomrecipe():
   print(bold + '\n'+ promptAI("Give me a random recipe! Optimize the instructions for a command line (not too many lines, no asterisks, etc), make it easy to follow on new lines and + unbold use cheap, common ingredients"))
+  main()
 
 def recipegenerator():
-  print(bold + promptAI("Generate a fun recipe for a healthy meal. Make sure it's easy to make, super short to explain, and uses common ingredients!") + unbold)
+  global foodlist
+  print(bold + promptAI(f"Generate a fun recipe for a healthy meal. Make sure it's easy to make, super short to explain (and optimized for terminal), and uses common ingredients, including any in this list if possible {foodlist}! Don't acknowledge this prompt!") + unbold)
+  main()
 
 def clearscn():
   os.system('cls' if os.name == 'nt' else 'clear')
@@ -141,7 +154,7 @@ def title():
     print(bold + randomtitle()+ 2*"\n" + "an AI Food Security Multitool! (Powered by Google©️ Gemini™️)" + "\n" + "Made by Matthew" + unbold)
 
 def main():
-  choice = int(input('''
+  choice = input('''
 Please pick your function:
 1 - Advice 
 2 - Therapy
@@ -151,11 +164,12 @@ Please pick your function:
 6 - Import ingredients from a file
 7 - Exit
 
-Pick your function via numbers: '''))
-  while choice not in map(int, list("1234567")):
+Pick your function via numbers: ''')
+  while choice not in list("1234567"):
     print(bold + "Invalid choice! Please try again." + unbold)
-    choice = int(input('Please pick your function via numbers: '))
+    choice = input('Please pick your function via numbers: ')
   clearscn()
+  choice = int(choice)
   if choice == 1:
     advice()
 
