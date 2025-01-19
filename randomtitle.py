@@ -1,7 +1,8 @@
+#importing choice from the random module
 from random import choice
 
 def randomtitle():
-  '''This function generates a randomized font of the BiteWise title, and makes every new run interesting, by varying the fonts used'''
+  '''This function chooses one of a list a randomized font of the BiteWise title, and returns it, making every new run interesting by varying the fonts used'''
   choices = [
     '''██████╗ ██╗████████╗███████╗██╗    ██╗██╗███████╗███████╗
     ██╔══██╗██║╚══██╔══╝██╔════╝██║    ██║██║██╔════╝██╔════╝
