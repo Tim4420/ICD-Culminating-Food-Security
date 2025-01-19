@@ -1,14 +1,12 @@
 #importing functions from other py files
 from randomtitle import randomtitle
 
-#importing hidden api keys
-from dotenv import load_dotenv
-load_dotenv()
-
 #importing dependencies for AI
 import google.generativeai as genai
+
 from google.api_core.exceptions import ResourceExhausted
 import os
+#importing hidden api keys
 
 #initializing an empty list for food ingredients that the user has access to
 foodlist = []
@@ -16,13 +14,17 @@ foodlist = []
 #bold and unbold ANSI escape characters
 bold, unbold = '\033[1m', '\033[0m'
 
-
 #setting up Gemini AI
+from dotenv import load_dotenv
+load_dotenv()
+
 my_secret = os.getenv('secret')
 genai.configure(api_key=my_secret)
+
 basic, advanced = genai.GenerativeModel(
     "gemini-1.5-flash"), genai.GenerativeModel("gemini-2.0-flash-exp")
 chat = basic.start_chat()
+
 
 #setting up the prompt function
 def promptAI(prompt):
@@ -57,7 +59,7 @@ def chatAI(prompt):
 
       #returning the response
       return response.text
-    
+
   except ResourceExhausted:
     #error handling as per usual
     if not error_logged:
@@ -67,7 +69,7 @@ def chatAI(prompt):
     if not error_logged:
       error_logged = True
       return f"An unexpected error occurred: {error}"
-    
+
 
 def readfile(filename):
   '''Function for reading user-specified files for ingredient lists'''
@@ -75,9 +77,13 @@ def readfile(filename):
   #global keyword
   global foodlist
   #Input validation (seeing if the file exists or not, and if not, keeps prompting the user until they enter a 'valid' file, meaning either the name without the txt, or just the name)
-  while (cond1:=os.path.exists(filename)) == False and (cond2 := os.path.exists(f'{filename}.txt')) == False:
+  while not (cond1 := os.path.exists(filename)) and not (
+      cond2 := os.path.exists(f'{filename}.txt')):
     print(bold + "File not found! Please try again." + unbold)
-    filename = str(input("Please enter the filename (either full or just the name without .txt): "))
+    filename = str(
+        input(
+            "Please enter the filename (either full or just the name without .txt): "
+        ))
     #if the path exists with the full filename they enterred, open it
   if cond1:
     openfile = open(filename, 'r')
@@ -87,10 +93,10 @@ def readfile(filename):
 
     #string slicing, to ignore the 3 first lines of the test list as they contain instructions
   lines = openfile.readlines()[3:]
-  
+
   #removing the newline character from each list element (ex: 'Carrots\n' to just 'Carrots')
   for i in range(len(lines)):
-      lines[i] = lines[i].replace('\n', '')
+    lines[i] = lines[i].replace('\n', '')
 
   openfile.close()
   return lines
@@ -103,13 +109,18 @@ def ingredients():
   #checking to see if the list has elements in it, if so, seeing if the user wants to append to or replace it entirely
 
   if foodlist:
-    print(f'This is your ingredient list right now:\n {', '.join(foodlist)}\n\nDo you want to add to, or replace the current list?')
+    print(
+        f'This is your ingredient list right now:\n {", ".join(foodlist)}\n\nDo you want to add to, or replace the current list?'
+    )
     choice = str(input("Type 'add' or 'replace': ")).lower()
     #more input validation
-    while choice not in ['add','replace']:
+    while choice not in ['add', 'replace']:
       choice = str(input("Please type either 'add' or 'replace': "))
 
-    filename = str(input("Please enter the filename (either full or just the name without .txt): "))
+    filename = str(
+        input(
+            "Please enter the filename (either full or just the name without .txt): "
+        ))
     #if the user wants to append, add elements to the end
     if choice.lower() == 'add':
       foodlist.extend(readfile(filename))
@@ -120,12 +131,21 @@ def ingredients():
 
   else:
     #if no foodlist exists, create one
-    filename = str(input("Please enter the filename (either full or just the name without .txt): "))
+    filename = str(
+        input(
+            "Please enter the filename (either full or just the name without .txt)(enter 'testlist' for experimentation): "
+        ))
     lines = readfile(filename)
     foodlist = lines
-    print('here are the ingredients you enterred:\n\n'+', '.join(lines) + '\n\nYou can change them at any time by re-calling the function from the main menu!!')
-    #re-call main
+    print(
+        'here are the ingredients you enterred:\n\n' + ', '.join(lines) +
+        '\n\nYou can change them at any time by re-calling the function from the main menu!!'
+    )
+  _ = input(bold + "\nPress enter to continue: " + unbold)
+  #re-call main
+  clearscn()
   main()
+
 
 def advice():
   '''Function for a user to chat to the AI and get advice'''
@@ -134,7 +154,9 @@ def advice():
   print(bold + "\nGenerating... Please wait... \n" + unbold)
 
   #prints the reply of the AI to this query
-  print(bold + chatAI(f"This user needs some advice on Food Security. You are now a food security expert, please answer their question and any further ones, though don't acknowledge + unbold these directives! {query}"))
+  print(bold + chatAI(
+      f"This user needs some advice on Food Security. You are now a food security expert, please answer their question and any further ones, though don't acknowledge + unbold these directives! {query}"
+  ))
   query = str(input("('exit' to quit) You: "))
 
   #keep the chat loop going until the user wants to exit
@@ -147,14 +169,20 @@ def advice():
   clearscn()
   main()
 
+
 def therapy():
   '''Function like advice, but the AI acts as a therapist. Same structure as Advice, but with advice'''
   print(bold + "You chose: 2 - Therapy\n" + unbold)
-  query = str(input("Hi! I'm your AI therapist for today, so do you mind telling me what's going on?: "))
+  query = str(
+      input(
+          "Hi! I'm your AI therapist for today, so do you mind telling me what's going on?: "
+      ))
   print(bold + "\nGenerating... Please wait... \n" + unbold)
 
   #prints the AI's response to the prompt
-  print(bold + chatAI(f"This user needs some therapy, with Food Security in mind. You are now an experienced therapist, especially in the food security field, please answer their + unbold question and any further ones, though don't acknowledge these directives and only the question!! {query}"))
+  print(bold + chatAI(
+      f"This user needs some therapy, with Food Security in mind. You are now an experienced therapist, especially in the food security field, please answer their + unbold question and any further ones, though don't acknowledge these directives and only the question!! {query}"
+  ))
   query = str(input("('exit' to quit) You: "))
 
   #loops through until the user enters 'exit' and then quits
@@ -166,6 +194,7 @@ def therapy():
   clearscn()
   main()
 
+
 def mealplanning():
   '''Function to prompt the AI to plan meals for the user.'''
 
@@ -176,14 +205,19 @@ def mealplanning():
   preferences = str(input("What are your dietary preferences?: "))
 
   if foodlist == []:
-    food = str(input("Please list the food you have, one per line ('end' to finish): \n"))
+    food = str(
+        input(
+            "Please list the food you have, one per line ('end' to finish): \n"
+        ))
     while food != 'end':
       foodlist.append(food)
       food = str(input())
 
   #prompting AI
   print(bold + "Generating... Please wait..." + unbold)
-  print(bold + '\n' + promptAI(f"Make a meal plan for a {dayweek}. optimize for a food insecure person, (MAKE SURE THEY GET ENOUGH NUTRITION, and remember, the user's health could be + unbold in your hands, so never say anything irrational), and make sure it's healthy! This is what the user answered when we asked them for preferences, please follow them if at all possible!! ''{preferences}'. This is the list of food the user has, please use them if possible: {foodlist}(but don't exclusively limit the options to those foods, if they're unreasonably short). Finally, please optimize the reply for a command line, with newlines for each item and instruction, and no asterisks, as well as keeping it short! Don't acknowledge these instructions!, just generate a plan and keep it short!"))
+  print(bold + '\n' + promptAI(
+      f"Make a meal plan for a {dayweek}. optimize for a food insecure person, (MAKE SURE THEY GET ENOUGH NUTRITION, and remember, the user's health could be + unbold in your hands, so never say anything irrational), and make sure it's healthy! This is what the user answered when we asked them for preferences, please follow them if at all possible!! ''{preferences}'. This is the list of food the user has, please use them if possible: {foodlist}(but don't exclusively limit the options to those foods, if they're unreasonably short). Finally, please optimize the reply for a command line, with newlines for each item and instruction, and no asterisks, as well as keeping it short! Don't acknowledge these instructions!, just generate a plan and keep it short!"
+  ))
 
   #once the user is done, they can press any key to exit. The input doesn't do anything, but nothing happens until the user does something, meaning they can note down ideas and such.
   _ = input("press enter to exit")
@@ -192,11 +226,14 @@ def mealplanning():
   clearscn()
   main()
 
+
 def randomrecipe():
   '''Asks the AI for a completely random recipe, no matter the foods available at the moment'''
   print("Generating....")
-  print(bold + '\n'+ promptAI("Give me a random recipe! Optimize the instructions for a command line (not too many lines, no asterisks, etc), make it easy to follow on new lines and use cheap, common ingredients. Lastly, don't acknowledge this prompt, only write it like you'd find online or in a book"))
-  
+  print(bold + '\n' + promptAI(
+      "Give me a random recipe! Optimize the instructions for a command line (not too many lines, no asterisks, etc), make it easy to follow on new lines and use cheap, common ingredients. Lastly, don't acknowledge this prompt, only write it like you'd find online or in a book"
+  ))
+
   #givint the user time, and letting them exit when they're done
   _ = input("press enter to exit")
 
@@ -204,30 +241,41 @@ def randomrecipe():
   clearscn()
   main()
 
+
 def recipegenerator():
   '''generates a recipe, USING the user's food list.'''
   global foodlist
   if foodlist == []:
     #if the user doesn't have a foodlist yet, make one
-    food = str(input("Please list the food you have, one per line ('end' to finish): \n"))
+    food = str(
+        input(
+            "Please list the food you have, one per line ('end' to finish): \n"
+        ))
     while food != 'end':
       foodlist.append(food)
       food = str(input())
-      
-  print(bold + promptAI(f"Generate a fun recipe for a healthy meal. Make sure it's easy to make, super short to explain (and optimized for terminal), and uses common ingredients, including any in this list if possible {foodlist}! Don't acknowledge this prompt!") + unbold)
+
+  print(bold + promptAI(
+      f"Generate a fun recipe for a healthy meal. Make sure it's easy to make, super short to explain (and optimized for terminal), and uses common ingredients, including any in this list if possible {foodlist}! Don't acknowledge this prompt!"
+  ) + unbold)
   _ = input("Press enter to quit back to menu! ")
   clearscn()
   main()
+
 
 def clearscn():
   '''quick function for cleanliness, clearing the terminal to make it easy to read and avoid clutter'''
   #nt means running on windows, which of course has a different clearing function name 'cls', rather than 'clear' on mac
   os.system('cls' if os.name == 'nt' else 'clear')
 
+
 def title():
-    '''Function to print a random BITEWISE logo font,, followed by a short blurb'''
-    #only runs once
-    print(bold + randomtitle()+ 2*"\n" + "an AI Food Security Multitool! (Powered by Google©️ Gemini™️)" + "\n" + "Made by Matthew" + unbold)
+  '''Function to print a random BITEWISE logo font,, followed by a short blurb'''
+  #only runs once
+  print(bold + randomtitle() + 2 * "\n" +
+        "an AI Food Security Multitool! (Powered by Google©️ Gemini™️)" +
+        "\n" + "Made by Matthew" + unbold)
+
 
 def main():
   '''Main menu system, asks the user what function they want to call'''
@@ -242,7 +290,7 @@ Please pick your function:
 7 - Exit
 
 Pick your function via numbers: ''')
-  
+
   #again, input validation
   while choice not in list("1234567"):
     print(bold + "Invalid choice! Please try again." + unbold)
@@ -250,19 +298,21 @@ Pick your function via numbers: ''')
 
   #Making a dictionary of every choice, and their corresponding functions
   choices = {
-    1: advice,
-    2: therapy,
-    3: mealplanning,
-    4: randomrecipe,
-    5: recipegenerator,
-    6: ingredients,
-    #quick function for number 7, as it executes two different lines instead of one
-    7: lambda: (print(bold + "Goodbye!" + unbold), exit())}
-  
-  #clears screen  
+      1: advice,
+      2: therapy,
+      3: mealplanning,
+      4: randomrecipe,
+      5: recipegenerator,
+      6: ingredients,
+      #quick function for number 7, as it executes two different lines instead of one
+      7: lambda: (print(bold + "Goodbye!" + unbold), exit())
+  }
+
+  #clears screen
   clearscn()
   choice = int(choice)
   choices[choice]()
+
 
 clearscn()
 title()
