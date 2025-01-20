@@ -1,19 +1,4 @@
 ##SECOND TESTING LIST (FOR REPLACING OR ADDING TESTING)
 ##PLS DONT CHANGE THESE LINES (OR DELETE)
 ##-----------------ADD LIST BELOW-------------
-kidney beans
-chickpeas
-bread
-bagels
-eggs
-shredded cheese
-shrimp
-baby spinach
-pepitas
-mango
-apples
-pears
-frozen peas
-chicken broth
-chorizo sausage
-canned corn kernels
+Chicken Nuggets
